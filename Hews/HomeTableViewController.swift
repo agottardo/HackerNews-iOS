@@ -9,23 +9,43 @@
 import UIKit
 import FeedKit
 import SafariServices
+import AVFoundation
 
 class HomeTableViewController: UITableViewController {
     
+    var audioPlayer : AVAudioPlayer!
+    
     var stories = [RSSFeedItem]()
+    let feedURL = URL(string: "https://news.ycombinator.com/rss")!
+    var parser : FeedParser?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let feedURL = URL(string: "https://news.ycombinator.com/rss")!
-        let parser = FeedParser(URL: feedURL)
+        parser = FeedParser(URL: feedURL)!
         
         // MARK: UI + Refresh Control
-        
-        setNeedsStatusBarAppearanceUpdate()
+        self.extendedLayoutIncludesOpaqueBars = true
+        refreshControl?.tintColor = UIColor.darkGray
+        refreshControl?.backgroundColor = UIColor.orange
         refreshControl?.attributedTitle = NSAttributedString(string: "Pull to refresh")
         refreshControl?.beginRefreshing()
         refreshControl?.attributedTitle = NSAttributedString(string: "Fetching the latest stories from HN...")
+        refreshControl?.addTarget(self, action: #selector(HomeTableViewController.updateContent), for: UIControlEvents.valueChanged)
+        
+        updateContent()
+    }
+    
+    @objc func updateContent() -> Void {
+        let audioFileUrl = NSURL.fileURL(withPath: Bundle.main.path(forResource: "pop", ofType: "mp3")!)
+        do {
+            try audioPlayer = AVAudioPlayer(contentsOf: audioFileUrl)
+            audioPlayer.volume = 0.1
+            audioPlayer.play()
+        } catch {
+            
+        }
+        
         
         if ((parser) != nil) {
             parser!.parseAsync(queue: DispatchQueue.global(qos: .userInitiated)) { (result) in

@@ -19,7 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         UINavigationBar.appearance().barTintColor = UIColor.orange
         UINavigationBar.appearance().tintColor = UIColor.darkGray
-        UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.darkGray, NSAttributedStringKey.font: UIFont.init(name: "AvenirNext-Medium", size: 20.0)!]
+        UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.darkGray, NSAttributedStringKey.font: UIFont.init(name: "FiraSans-Regular", size: 20.0)!]
         Fabric.with([Crashlytics.self])
         return true
     }
