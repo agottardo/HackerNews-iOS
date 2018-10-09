@@ -22,7 +22,7 @@ class HomeTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        parser = FeedParser(URL: feedURL)!
+        parser = FeedParser(URL: feedURL)
         
         // MARK: UI + Refresh Control
         self.extendedLayoutIncludesOpaqueBars = true
@@ -31,22 +31,12 @@ class HomeTableViewController: UITableViewController {
         refreshControl?.attributedTitle = NSAttributedString(string: "Pull to refresh")
         refreshControl?.beginRefreshing()
         refreshControl?.attributedTitle = NSAttributedString(string: "Fetching the latest stories from HN...")
-        refreshControl?.addTarget(self, action: #selector(HomeTableViewController.updateContent), for: UIControlEvents.valueChanged)
+        refreshControl?.addTarget(self, action: #selector(HomeTableViewController.updateContent), for: UIControl.Event.valueChanged)
         
         updateContent()
     }
     
     @objc func updateContent() -> Void {
-        let audioFileUrl = NSURL.fileURL(withPath: Bundle.main.path(forResource: "pop", ofType: "mp3")!)
-        do {
-            try audioPlayer = AVAudioPlayer(contentsOf: audioFileUrl)
-            audioPlayer.volume = 0.1
-            audioPlayer.play()
-        } catch {
-            
-        }
-        
-        
         if ((parser) != nil) {
             parser!.parseAsync(queue: DispatchQueue.global(qos: .userInitiated)) { (result) in
                 // Do your thing, then back to the Main thread
@@ -81,7 +71,14 @@ class HomeTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "storyCell", for: indexPath)
         cell.textLabel?.text = stories[indexPath.row].title
-        cell.detailTextLabel?.text = URL(string: stories[indexPath.row].link!)?.host
+        /*let dateFormatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.locale = Locale.autoupdatingCurrent
+            formatter.dateStyle = DateFormatter.Style.medium
+            formatter.doesRelativeDateFormatting = true
+            return formatter
+        }()*/
+        cell.detailTextLabel?.text = (URL(string: stories[indexPath.row].link!)?.host)!// + " - " + dateFormatter.string(from: stories[indexPath.row].pubDate ?? Date()).lowercased()
         return cell
     }
     
@@ -98,8 +95,8 @@ class HomeTableViewController: UITableViewController {
     func presentNetworkErrorAlert() -> Void {
         refreshControl?.endRefreshing()
         refreshControl?.attributedTitle = NSAttributedString(string: "Pull to refresh")
-        let alert = UIAlertController(title: "An error occurred", message: "I couldn't retrieve the latest stories from Hacker News. Maybe your network connection is not working?", preferredStyle: UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction.init(title: "OK 😕", style: UIAlertActionStyle.default, handler: nil)
+        let alert = UIAlertController(title: "An error occurred", message: "I couldn't retrieve the latest stories from Hacker News. Maybe your network connection is not working?", preferredStyle: UIAlertController.Style.alert)
+        let okAction = UIAlertAction.init(title: "OK 😕", style: UIAlertAction.Style.default, handler: nil)
         alert.addAction(okAction)
         self.present(alert, animated: true, completion: nil)
     }
